@@ -99,7 +99,7 @@ namespace LINQ_Lambda_DatabaseExpressions
         {
             if (Titel != null)
             {
-                string[]hoofdstuk  = Titel.Substring(voorvoegsel.Length).Trim().Split(tussenVoegsel);
+                string[]hoofdstuk = Titel.Substring(voorvoegsel.Length).Trim().Split(tussenVoegsel);
                 if (hoofdstuk[0] != "")
                     Hoofdstuk = hoofdstuk;
             }
@@ -122,185 +122,197 @@ namespace LINQ_Lambda_DatabaseExpressions
             CreateDb();
             CreateOpdrachten();
             StartOefeningen();
+
         }
+
         static void StartOefeningen()
         {
-
-                string huidigeHoofdstuk = "1";
-                string[] mijnMenu = menuHoofdstuk(huidigeHoofdstuk);
-                int keuze = 1;
-                while (keuze != mijnMenu.GetUpperBound(0) + 1)
+            string huidigeHoofdstuk = "1";
+            string[] mijnMenu = menuHoofdstuk(huidigeHoofdstuk);
+            int keuze = 1;
+            int iOefeningen = 0;
+            while (keuze != mijnMenu.GetUpperBound(0) + 1)
+            {
+                bool menuChanged = false;
+                Console.Clear();
+                keuze = SelectMenu(multiLineLeftSpace: "Opdracht: ".Length, titel: "SQL " + huidigeHoofdstuk, clearScreen: false, select:keuze, menu: mijnMenu);
+                if ((keuze == mijnMenu.GetLowerBound(0) + 1) && (huidigeHoofdstuk != zoekHoofdstuk(bLaatste: false)))
                 {
-                    bool menuChanged = false;
-                    Console.Clear();
-                    keuze = SelectMenu(multiLineLeftSpace: "Opdracht: ".Length, titel: "SQL " + huidigeHoofdstuk, clearScreen: false, select:keuze, menu: mijnMenu);
-                    if ((keuze == mijnMenu.GetUpperBound(0)) && (huidigeHoofdstuk != zoekHoofdstuk()))
+                    huidigeHoofdstuk = zoekHoofdstuk(huidigeHoofdstuk, false);
+                    mijnMenu = menuHoofdstuk(huidigeHoofdstuk);
+                    switch (huidigeHoofdstuk)
                     {
-                        huidigeHoofdstuk = zoekHoofdstuk(huidigeHoofdstuk);
-                        mijnMenu = menuHoofdstuk(huidigeHoofdstuk);
-                        menuChanged = true;
+                        case "2": iOefeningen -= 9; break;
+                        case "3": iOefeningen -= 13; break;
                     }
-                    if ((keuze == mijnMenu.GetLowerBound(0) + 1) && (huidigeHoofdstuk != zoekHoofdstuk(bLaatste: false)))
+                    menuChanged = true;
+                }
+                if ((keuze == mijnMenu.GetUpperBound(0)) && (huidigeHoofdstuk != zoekHoofdstuk()))
+                {
+                    huidigeHoofdstuk = zoekHoofdstuk(huidigeHoofdstuk);
+                    mijnMenu = menuHoofdstuk(huidigeHoofdstuk);
+                    switch (huidigeHoofdstuk)
                     {
-                        huidigeHoofdstuk = zoekHoofdstuk(huidigeHoofdstuk, false);
-                        mijnMenu = menuHoofdstuk(huidigeHoofdstuk);
-                        menuChanged = true;
+                        case "2": iOefeningen += 9; break;
+                        case "3": iOefeningen += 13; break;
                     }
-                    if ((!menuChanged) && (keuze != mijnMenu.GetUpperBound(0) + 1))
+                    menuChanged = true;
+                }
+                if ((!menuChanged) && (keuze != mijnMenu.GetUpperBound(0) + 1))
+                {
+                    if (huidigeHoofdstuk == zoekHoofdstuk()) 
+                        keuze--;
+                    oefeningen[iOefeningen + keuze - 1].StartOefening(); 
+                }
+            }
+            string[] menuHoofdstuk(string hoofdstuk, int maxLength = 0)
+            {
+                List<string> menu = new List<string>();
+                if (hoofdstuk != zoekHoofdstuk(bLaatste: false)) menu.Add("<vorige hoofdstuk>");
+                foreach (Oefening oefening in oefeningen)
+                {
+                    if (oefening.Hoofdstuk[0] == hoofdstuk)
                     {
-                        if ((huidigeHoofdstuk == zoekHoofdstuk())) 
-                            keuze--;
-                        oefeningen[keuze - 1].StartOefening(); ;
+                        if (maxLength != 0)
+                            menu.Add((oefening.Opdracht.Length > maxLength) ? oefening.Opdracht.Substring(0, maxLength) : oefening.Opdracht);
+                        else
+                            menu.Add(oefening.Opdracht);
                     }
                 }
-                string[] menuHoofdstuk(string hoofdstuk, int maxLength = 0)
+                if (hoofdstuk != zoekHoofdstuk()) menu.Add("<volgende hoofdstuk>");
+                menu.Add("<Exit>");
+                return menu.ToArray();
+            }
+            string zoekHoofdstuk(string hfdstuk = "0", bool bVolgendeHfdstuk = true, bool bLaatste = true)
+            {
+                if (hfdstuk != "0")
                 {
-                    List<string> menu = new List<string>();
-                    if (hoofdstuk != zoekHoofdstuk(bLaatste: false)) menu.Add("<vorige hoofdstuk>");
+                    bool hfdstukGevonden = false;
+                    string vorigeHfdstuk = "";
                     foreach (Oefening oefening in oefeningen)
                     {
-                        if (oefening.Hoofdstuk[0] == hoofdstuk)
+                        if (oefening.Hoofdstuk[0] != hfdstuk) vorigeHfdstuk = oefening.Hoofdstuk[0];
+                        if (oefening.Hoofdstuk[0] == hfdstuk)
                         {
-                            if (maxLength != 0)
-                                menu.Add((oefening.Opdracht.Length > maxLength) ? oefening.Opdracht.Substring(0, maxLength) : oefening.Opdracht);
-                            else
-                                menu.Add(oefening.Opdracht);
+                            hfdstukGevonden = true;
+                            if (!bVolgendeHfdstuk)
+                                return vorigeHfdstuk;
                         }
+                        else
+                            if ((hfdstukGevonden) && (oefening.Hoofdstuk[0] != hfdstuk))
+                            return oefening.Hoofdstuk[0];
                     }
-                    if (hoofdstuk != zoekHoofdstuk()) menu.Add("<volgende hoofdstuk>");
-                    menu.Add("<Exit>");
-                    return menu.ToArray();
                 }
-                string zoekHoofdstuk(string hfdstuk = "0", bool bVolgendeHfdstuk = true, bool bLaatste = true)
-                {
-                    if (hfdstuk != "0")
-                    {
-                        bool hfdstukGevonden = false;
-                        string vorigeHfdstuk = "";
-                        foreach (Oefening oefening in oefeningen)
-                        {
-                            if (oefening.Hoofdstuk[0] != hfdstuk) vorigeHfdstuk = oefening.Hoofdstuk[0];
-                            if (oefening.Hoofdstuk[0] == hfdstuk)
-                            {
-                                hfdstukGevonden = true;
-                                if (!bVolgendeHfdstuk)
-                                    return vorigeHfdstuk;
-                            }
-                            else
-                                if ((hfdstukGevonden) && (oefening.Hoofdstuk[0] != hfdstuk))
-                                return oefening.Hoofdstuk[0];
-                        }
-                    }
-                    else
-                        if (bLaatste)
-                        return oefeningen[oefeningen.Count - 1].Hoofdstuk[0];
-                    else
-                        return oefeningen[0].Hoofdstuk[0];
-                    return "-1";
-                }
-                int SelectMenu(int multiLineLeftSpace = -1, string titel = "", bool clearScreen = true, int select = 1, params string[] menu)
-                {
-                    int selection = select;
-                    int cursTop = Console.CursorTop;
-                    int cursLeft = Console.CursorLeft;
-                    bool selected = false;
-                    ConsoleColor selectionForeground = Console.BackgroundColor;
-                    ConsoleColor selectionBackground = Console.ForegroundColor;
-                    int extraLine = 0;
+                else
+                    if (bLaatste)
+                    return oefeningen[oefeningen.Count - 1].Hoofdstuk[0];
+                else
+                    return oefeningen[0].Hoofdstuk[0];
+                return "-1";
+            }
+            int SelectMenu(int multiLineLeftSpace = -1, string titel = "", bool clearScreen = true, int select = 1, params string[] menu)
+            {
+                int selection = select;
+                int cursTop = Console.CursorTop;
+                int cursLeft = Console.CursorLeft;
+                bool selected = false;
+                ConsoleColor selectionForeground = Console.BackgroundColor;
+                ConsoleColor selectionBackground = Console.ForegroundColor;
+                int extraLine = 0;
 
-                    if (clearScreen)
+                if (clearScreen)
+                {
+                    Console.SetCursorPosition(0, 0);
+                    Console.Clear();
+                }
+                else
+                {
+                    Console.SetCursorPosition(cursLeft, cursTop);
+                }
+                if (titel != "")
+                {
+                    Console.WriteLine(titel);
+                    cursTop++;
+                }
+                Console.CursorVisible = false;
+                while (!selected)
+                {
+                    extraLine = 0;
+                    for (int i = 0; i < menu.Length; i++)
                     {
-                        Console.SetCursorPosition(0, 0);
-                        Console.Clear();
-                    }
-                    else
-                    {
-                        Console.SetCursorPosition(cursLeft, cursTop);
-                    }
-                    if (titel != "")
-                    {
-                        Console.WriteLine(titel);
-                        cursTop++;
-                    }
-                    Console.CursorVisible = false;
-                    while (!selected)
-                    {
-                        extraLine = 0;
-                        for (int i = 0; i < menu.Length; i++)
+                        if (selection == i + 1)
                         {
-                            if (selection == i + 1)
+                            Console.ForegroundColor = selectionForeground;
+                            Console.BackgroundColor = selectionBackground;
+                        }
+                        if (multiLineLeftSpace != -1)
+                        {
+                            string leftSpace = "";
+                            for (int k = 0; k < multiLineLeftSpace; k++)
                             {
-                                Console.ForegroundColor = selectionForeground;
-                                Console.BackgroundColor = selectionBackground;
+                                leftSpace += ' ';
                             }
-                            if (multiLineLeftSpace != -1)
+                            if ((cursLeft + menu[i].Length + 5) > Console.WindowWidth)
                             {
-                                string leftSpace = "";
-                                for (int k = 0; k < multiLineLeftSpace; k++)
+                                string[] splittedMenu = SplitString(menu[i], Console.WindowWidth - cursLeft - 8 - multiLineLeftSpace);
+                                var temp = splittedMenu.GetUpperBound(0);
+                                for (int k = 0; k < splittedMenu.GetUpperBound(0) + 1; k++)
                                 {
-                                    leftSpace += ' ';
-                                }
-                                if ((cursLeft + menu[i].Length + 5) > Console.WindowWidth)
-                                {
-                                    string[] splittedMenu = SplitString(menu[i], Console.WindowWidth - cursLeft - 8 - multiLineLeftSpace);
-                                    var temp = splittedMenu.GetUpperBound(0);
-                                    for (int k = 0; k < splittedMenu.GetUpperBound(0) + 1; k++)
+                                    if (k == 0)
                                     {
-                                        if (k == 0)
-                                        {
-                                            Console.SetCursorPosition(cursLeft, cursTop + i + k + extraLine);
-                                            Console.Write(string.Format("{0,5}:{1,-40}", i + 1, splittedMenu[k]));
-                                        }
-                                        else
-                                        {
-                                            Console.SetCursorPosition(cursLeft, cursTop + i + k + extraLine);
-                                            Console.Write(string.Format("{0,5} {1,-40}", "", leftSpace + splittedMenu[k]));
-                                        }
+                                        Console.SetCursorPosition(cursLeft, cursTop + i + k + extraLine);
+                                        Console.Write(string.Format("{0,5}:{1,-40}", i + 1, splittedMenu[k]));
                                     }
-                                    extraLine += splittedMenu.GetUpperBound(0);
+                                    else
+                                    {
+                                        Console.SetCursorPosition(cursLeft, cursTop + i + k + extraLine);
+                                        Console.Write(string.Format("{0,5} {1,-40}", "", leftSpace + splittedMenu[k]));
+                                    }
                                 }
-                                else
-                                {
-                                    Console.SetCursorPosition(cursLeft, cursTop + i + extraLine);
-                                    Console.Write(string.Format("{0,5}:{1,-40}", i + 1, menu[i]));
-                                }
+                                extraLine += splittedMenu.GetUpperBound(0);
                             }
                             else
                             {
-                                Console.SetCursorPosition(cursLeft, cursTop + i);
+                                Console.SetCursorPosition(cursLeft, cursTop + i + extraLine);
                                 Console.Write(string.Format("{0,5}:{1,-40}", i + 1, menu[i]));
                             }
-                            Console.ResetColor();
-
                         }
-                        switch (Console.ReadKey(true).Key)
+                        else
                         {
-                            case ConsoleKey.UpArrow:
-                                selection--;
-                                break;
-                            case ConsoleKey.DownArrow:
-                                selection++;
-                                break;
-                            case ConsoleKey.Enter:
-                                selected = true;
-                                break;
-                            case ConsoleKey.D1:
-                            case ConsoleKey.NumPad1: selection = 1; break;
-                            case ConsoleKey.D2:
-                            case ConsoleKey.NumPad2: selection = 2; break;
-                            case ConsoleKey.D3:
-                            case ConsoleKey.NumPad3: selection = 3 <= menu.Length ? 3 : menu.Length; break;
-                            case ConsoleKey.D4:
-                            case ConsoleKey.NumPad4: selection = 4 <= menu.Length ? 4 : menu.Length; break;
+                            Console.SetCursorPosition(cursLeft, cursTop + i);
+                            Console.Write(string.Format("{0,5}:{1,-40}", i + 1, menu[i]));
                         }
-                        selection = Math.Min(Math.Max(selection, 1), menu.Length);
-                        if (clearScreen)
-                            Console.SetCursorPosition(0, 0);
-                        else Console.SetCursorPosition(cursLeft, cursTop);
+                        Console.ResetColor();
+
                     }
-                    Console.CursorVisible = true;
-                    return selection;
+                    switch (Console.ReadKey(true).Key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            selection--;
+                            break;
+                        case ConsoleKey.DownArrow:
+                            selection++;
+                            break;
+                        case ConsoleKey.Enter:
+                            selected = true;
+                            break;
+                        case ConsoleKey.D1:
+                        case ConsoleKey.NumPad1: selection = 1; break;
+                        case ConsoleKey.D2:
+                        case ConsoleKey.NumPad2: selection = 2; break;
+                        case ConsoleKey.D3:
+                        case ConsoleKey.NumPad3: selection = 3 <= menu.Length ? 3 : menu.Length; break;
+                        case ConsoleKey.D4:
+                        case ConsoleKey.NumPad4: selection = 4 <= menu.Length ? 4 : menu.Length; break;
+                    }
+                    selection = Math.Min(Math.Max(selection, 1), menu.Length);
+                    if (clearScreen)
+                        Console.SetCursorPosition(0, 0);
+                    else Console.SetCursorPosition(cursLeft, cursTop);
                 }
+                Console.CursorVisible = true;
+                return selection;
+            }
             
         }
         static string[] SplitString(string stringToSplit, int maxLength)
@@ -861,7 +873,7 @@ namespace LINQ_Lambda_DatabaseExpressions
             var collection = people.Join(peopleHobbies,
                 p => p.PersonId,
                 ph => ph.PersonId,
-                (p,ph) => new { p = p, ph = ph })
+                (p,ph) => new { p, ph })
                 .Join(hobbies,
                 sc => sc.ph.HobbyId,
                 h => h.HobbyId,
