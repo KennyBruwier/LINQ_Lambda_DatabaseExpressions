@@ -104,8 +104,6 @@ namespace LINQ_Lambda_DatabaseExpressions
                     Hoofdstuk = hoofdstuk;
             }
         }
-
-
     }
     
     class Program
@@ -124,7 +122,6 @@ namespace LINQ_Lambda_DatabaseExpressions
             CreateDb();
             CreateOpdrachten();
             StartOefeningen();
-
         }
 
         static void StartOefeningen()
@@ -145,7 +142,7 @@ namespace LINQ_Lambda_DatabaseExpressions
                     switch (huidigeHoofdstuk)
                     {
                         case "1": iOefeningen -= aantalOefeningenInHoofdstuk("1")-1; break;
-                        case "2": iOefeningen -= aantalOefeningenInHoofdstuk("2")-1; break;
+                        case "2": iOefeningen -= aantalOefeningenInHoofdstuk("2")+1; break;
                     }
                     menuChanged = true;
                 }
@@ -156,7 +153,7 @@ namespace LINQ_Lambda_DatabaseExpressions
                     switch (huidigeHoofdstuk)
                     {
                         case "2": iOefeningen += aantalOefeningenInHoofdstuk("1")-1; break;
-                        case "3": iOefeningen += aantalOefeningenInHoofdstuk("2")-1; break;
+                        case "3": iOefeningen += aantalOefeningenInHoofdstuk("2")+1; break;
                     }
                     menuChanged = true;
                 }
@@ -220,7 +217,7 @@ namespace LINQ_Lambda_DatabaseExpressions
                 bool selected = false;
                 ConsoleColor selectionForeground = Console.BackgroundColor;
                 ConsoleColor selectionBackground = Console.ForegroundColor;
-                int extraLine = 0;
+                int extraLine;
 
                 if (clearScreen)
                 {
@@ -257,7 +254,6 @@ namespace LINQ_Lambda_DatabaseExpressions
                             if ((cursLeft + menu[i].Length + 5) > Console.WindowWidth)
                             {
                                 string[] splittedMenu = SplitString(menu[i], Console.WindowWidth - cursLeft - 8 - multiLineLeftSpace);
-                                var temp = splittedMenu.GetUpperBound(0);
                                 for (int k = 0; k < splittedMenu.GetUpperBound(0) + 1; k++)
                                 {
                                     if (k == 0)
