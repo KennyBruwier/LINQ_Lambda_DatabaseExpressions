@@ -104,6 +104,8 @@ namespace LINQ_Lambda_DatabaseExpressions
                     Hoofdstuk = hoofdstuk;
             }
         }
+
+
     }
     
     class Program
@@ -142,8 +144,8 @@ namespace LINQ_Lambda_DatabaseExpressions
                     mijnMenu = menuHoofdstuk(huidigeHoofdstuk);
                     switch (huidigeHoofdstuk)
                     {
-                        case "1": iOefeningen -= 9; break;
-                        case "2": iOefeningen -= 13; break;
+                        case "1": iOefeningen -= aantalOefeningenInHoofdstuk("1")-1; break;
+                        case "2": iOefeningen -= aantalOefeningenInHoofdstuk("2")-1; break;
                     }
                     menuChanged = true;
                 }
@@ -153,8 +155,8 @@ namespace LINQ_Lambda_DatabaseExpressions
                     mijnMenu = menuHoofdstuk(huidigeHoofdstuk);
                     switch (huidigeHoofdstuk)
                     {
-                        case "2": iOefeningen += 9; break;
-                        case "3": iOefeningen += 13; break;
+                        case "2": iOefeningen += aantalOefeningenInHoofdstuk("1")-1; break;
+                        case "3": iOefeningen += aantalOefeningenInHoofdstuk("2")-1; break;
                     }
                     menuChanged = true;
                 }
@@ -313,7 +315,16 @@ namespace LINQ_Lambda_DatabaseExpressions
                 Console.CursorVisible = true;
                 return selection;
             }
-            
+            int aantalOefeningenInHoofdstuk(string hfdstuk)
+            {
+                int iCount = 0;
+                foreach (Oefening oefening in oefeningen)
+                {
+                    if ((oefening.Hoofdstuk[0] != null) && (oefening.Hoofdstuk[0] == hfdstuk)) iCount++;
+                }
+
+                return iCount;
+            }
         }
         static string[] SplitString(string stringToSplit, int maxLength)
         {
