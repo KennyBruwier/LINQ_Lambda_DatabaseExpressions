@@ -142,8 +142,8 @@ namespace LINQ_Lambda_DatabaseExpressions
                     mijnMenu = menuHoofdstuk(huidigeHoofdstuk);
                     switch (huidigeHoofdstuk)
                     {
-                        case "2": iOefeningen -= 9; break;
-                        case "3": iOefeningen -= 13; break;
+                        case "1": iOefeningen -= 9; break;
+                        case "2": iOefeningen -= 13; break;
                     }
                     menuChanged = true;
                 }
@@ -814,7 +814,6 @@ namespace LINQ_Lambda_DatabaseExpressions
                     Console.WriteLine("< "+product.o.ProductId );
 	            }
             }
-            Console.ReadLine(); 
 
         }
         static void Oefening3_2()
@@ -857,7 +856,6 @@ namespace LINQ_Lambda_DatabaseExpressions
                     Console.WriteLine("-> ProductId: "+product.sc.o.OrderId +" totaal: " + product.Totaal );
 	            }
             }
-            Console.ReadLine();
 
         }
         static void Oefening3_3()
@@ -891,7 +889,6 @@ namespace LINQ_Lambda_DatabaseExpressions
                     Console.WriteLine("-> "+person.sc.p.FirstName +" " + person.sc.p.LastName );
 	            }
             }
-            Console.ReadLine();
         }
         static void Oefening3_4()
         {
@@ -929,7 +926,6 @@ namespace LINQ_Lambda_DatabaseExpressions
                     Console.WriteLine("-> "+currentPerson + ((currentPerson.Length <13)? "\t\t":"\t") + "Lengte van: " + person.Length);
 	            }
             }
-            Console.ReadLine();
         }
         static void Oefening3_5()
         {
@@ -948,7 +944,6 @@ namespace LINQ_Lambda_DatabaseExpressions
 	        {
                 Console.WriteLine(person.Key);
 	        }
-            Console.ReadLine();
         }
         static void Oefening3_6()
         {
@@ -979,7 +974,6 @@ namespace LINQ_Lambda_DatabaseExpressions
                     Console.WriteLine("--> " + person.FullName);
 	            }
 	        }
-            Console.ReadLine();
         }
         static void Oefening3_7()
         {
@@ -1010,7 +1004,6 @@ namespace LINQ_Lambda_DatabaseExpressions
                     Console.WriteLine("--> Orderid: " + product.OrderId);
                 }
             }
-            Console.ReadLine(); 
         }
         static void Oefening3_8()
         {
@@ -1047,7 +1040,6 @@ namespace LINQ_Lambda_DatabaseExpressions
                     Console.WriteLine("-> ProductId: " + ((person.o != null) ? person.o.ProductId.ToString() : "geen"));
                 }
             }
-            Console.ReadLine(); 
         }
         static void Oefening3_9()
         {
@@ -1103,7 +1095,6 @@ namespace LINQ_Lambda_DatabaseExpressions
 	                }
 	            }
 	        }
-            Console.ReadLine();
         }
         static void CreateDb()
         {
